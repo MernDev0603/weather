@@ -1,21 +1,42 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
 import SearchBar from "./SearchBar";
+import { vi } from "vitest";
 
-test("renders search input and button", () => {
-  render(<SearchBar onSearch={() => {}} />);
-  expect(screen.getByPlaceholderText("Enter a city...")).toBeInTheDocument();
-  expect(screen.getByText("Search")).toBeInTheDocument();
-});
-
-test("calls onSearch with input value when button is clicked", () => {
-  const mockSearch = vi.fn();
-  render(<SearchBar onSearch={mockSearch} />);
-
-  fireEvent.change(screen.getByPlaceholderText("Enter a city..."), {
-    target: { value: "London" },
+describe("SearchBar Component", () => {
+  test("renders input field", () => {
+    render(<SearchBar onSearch={() => {}} />);
+    expect(screen.getByPlaceholderText("Enter a location...")).toBeInTheDocument();
   });
-  fireEvent.click(screen.getByText("Search"));
 
-  expect(mockSearch).toHaveBeenCalledWith("London");
+  test("updates input value on change", () => {
+    render(<SearchBar onSearch={() => {}} />);
+    
+    const input = screen.getByPlaceholderText("Enter a location...") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "New York" } });
+
+    expect(input.value).toBe("New York");
+  });
+
+  test("submits form when Enter is pressed", () => {
+    const mockOnSearch = vi.fn();
+    render(<SearchBar onSearch={mockOnSearch} />);
+
+    const input = screen.getByPlaceholderText("Enter a location...") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "London" } });
+
+    // Simulate pressing Enter using fireEvent.submit on the form
+    fireEvent.submit(input.closest("form")!);
+
+    expect(mockOnSearch).toHaveBeenCalledWith("London");
+  });
+
+  test("does not call onSearch if input is empty", () => {
+    const mockOnSearch = vi.fn();
+    render(<SearchBar onSearch={mockOnSearch} />);
+
+    const input = screen.getByPlaceholderText("Enter a location...") as HTMLInputElement;
+    fireEvent.submit(input.closest("form")!);
+
+    expect(mockOnSearch).not.toHaveBeenCalled();
+  });
 });

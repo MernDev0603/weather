@@ -8,16 +8,21 @@ const App: React.FC = () => {
   const [weather, setWeather] = useState<any>(null);
 
   const handleSearch = async (city: string) => {
-    const geolocation = await fetchGeoLocation(city);
-    const data = await fetchWeather(geolocation.latitude, geolocation.latitude);
-    setWeather(data);
+    try {
+      const geolocation = await fetchGeoLocation(city);
+      const data = await fetchWeather(geolocation.latitude, geolocation.latitude);
+      setWeather(data);
+    } catch {
+      setWeather(null);
+    }
   };
 
   return (
-    <div>
-      <h1>Weather Forecast</h1>
+    <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-blue-600 m-6">Weather Forecast</h1>
       <SearchBar onSearch={handleSearch} />
       {weather && <WeatherDisplay weather={weather} />}
+      {!weather && <>No data to display</>}
     </div>
   );
 };

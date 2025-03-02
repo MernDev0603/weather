@@ -24,7 +24,7 @@ describe("fetchGeoLocation", () => {
 
     const result = await fetchGeoLocation("Berlin");
 
-    expect(result).toEqual([
+    expect(result).toEqual(
       {
         id: 1,
         name: "Berlin",
@@ -32,7 +32,7 @@ describe("fetchGeoLocation", () => {
         longitude: 13.405,
         country: "Germany",
       },
-    ]);
+    );
   });
 
   test("throws an error when no results are found", async () => {
